@@ -1,4 +1,8 @@
-//Pins for LED lights 
+/**
+ * Project 0 - Hello World: Decision Maker 
+ */
+
+// Pins for LED lights 
 const int led1 =  11; 
 const int led2 = 12; 
 const int led3 = 13;
@@ -6,11 +10,17 @@ const int led4 = 9;
 const int led5 = 8;
 const int led6 = 10;
 
-//Pin for button
+// Pins for buttons
 const int button1 = 2; 
 const int button2 = 3; 
+
+// Variables to keep track of state of button 
 int buttonOneState = 0;
 int buttonTwoState = 0;
+
+// Variable to check if button was pressed 
+bool buttonOnePressed = false; 
+bool buttonTwoPressed = false; 
 
 //Pins for 7 segment LED display 
 int A =52;
@@ -21,27 +31,30 @@ int E = 47;
 int F = 51; 
 int G = 48;
 
+//Variable to keep track of number displayed on LED display 
 int segCounter = 2; 
 
+// Array to store pin numbers of LED lights 
 int ledPins[] = {11, 12, 13, 9, 8, 10};
 
-bool buttonOnePressed = false; 
-bool buttonTwoPressed = false; 
 
-
+/**
+ * Function to set up input and output pins for buttons, LED lights, and 7 segment LED display 
+ */
 void setup() {
-  // initialize the LED pin as an output:
+  // Initializing the LED light pins to be output pins
   pinMode(led1, OUTPUT);
   pinMode(led2, OUTPUT);
   pinMode(led3, OUTPUT);
   pinMode(led4, OUTPUT);
   pinMode(led5, OUTPUT);
   pinMode(led6, OUTPUT);
-  // initialize the pushbutton pin as an input:
+  
+  // Initialiaing the button pins to be o=input pins
   pinMode(button1, INPUT);
   pinMode(button2, INPUT);
 
-  //initialize the 7 segment LED light as OUTPUT 
+  //Initializing 7 segment LED display pins to be output pins 
   pinMode(A,OUTPUT);
   pinMode(B,OUTPUT);
   pinMode(C,OUTPUT);
@@ -50,6 +63,7 @@ void setup() {
   pinMode(F,OUTPUT);
   pinMode(G,OUTPUT);
 
+  // Setting all segments of the LED display to be turned off 
   digitalWrite(A,HIGH);
   digitalWrite(B,HIGH);
   digitalWrite(C,HIGH);
@@ -57,21 +71,27 @@ void setup() {
   digitalWrite(E,HIGH);
   digitalWrite(F,HIGH);
   digitalWrite(G,HIGH);
-  
-  Serial.begin(9600); 
+
+  // Initializing random number generator 
   randomSeed(analogRead(0));
 }
 
+/**
+ * Loop function to user input and output display. 
+ */
 void loop() {
 
-  buttonOneState = digitalRead(button2);
-  //Serial.println(buttonTwoState);
-  //Serial.println(segCounter);
-  if (buttonOneState == HIGH && buttonOnePressed == false) {
+  // Reading state of the button controlling 7 segment LED display (button 2)
+  buttonTwoState = digitalRead(button2);
+  // Checking if button 2 is pressed by user. If so set button pressed to true and delay for 500ms. 
+  if (buttonTwoState == HIGH && buttonTwoPressed == false) {
     buttonTwoPressed = true; 
     delay(500); 
   }
 
+  /**
+   * Checking if button 2 has been pressed. If button 2 is pressed, check which number is set by user and display corresponding number on 7 segment LED display. 
+   */ 
   if (buttonTwoPressed == true){
     if (segCounter == 2){
       eraseNumberSix(); 
@@ -94,25 +114,32 @@ void loop() {
       displayNumberSix();  
     }
     buttonTwoPressed = false; 
+
+    // Checking if 7 segment LED display counter is set to the value 6. If so, reset counter back to 2. If not, increment the counter by a value of 1. 
     if (segCounter == 6){
       segCounter = 2;
     }
     else {
       segCounter++;
     }
-    Serial.println(segCounter);
   }
-  
+
+  // Reading state of the button controlling the triggers decision making (button 1) 
   buttonOneState = digitalRead(button1);
-  //Serial.println(buttonState);
+
+  // Checking if button 2 is pressed by user. If so set button pressed to true and delay for 500ms.
   if (buttonOneState == HIGH && buttonOnePressed == false) {
     buttonOnePressed = true;
     delay(500); 
-    //Serial.println("ON");
   } 
 
+  /**
+   * Checking if button 1 has been pressed. If button 1 is pressed, check which number is set by user on 7 segment LED display and randomly generate a value within that range. 
+   */ 
   if (buttonOnePressed == true){
+    // Initializing variable to store the value that is randomly generated. 
     int choice; 
+    
     if ((segCounter-1) == 2){
       choice = random(2); 
       beginTwoLights(); 
@@ -150,18 +177,19 @@ void loop() {
       beginSixLights();
       beginSixLights();
     }
-    /**digitalWrite(ledPins[choice], HIGH);
+
+    // Turning on the LED corresponding to the choice associated with the random number that is generated to indicate to the user. 
+    digitalWrite(ledPins[choice], HIGH);
     delay(10000);  
     digitalWrite(ledPins[choice], LOW);
-    buttonOnePressed = false; */ 
-    digitalWrite(led5, HIGH);
-    delay(10000);  
-    digitalWrite(led5, LOW);
-    buttonOnePressed = false;
+    buttonOnePressed = false; 
   }
 }
 
 
+/**
+ * Functions to flash corresponding number of lights before a random number is generated and decision is made. 
+ */
 void beginTwoLights(){
   digitalWrite(led1, HIGH);   
   delay(100); 
@@ -254,7 +282,9 @@ void beginSixLights(){
 }
 
 
-
+/**
+ * Functions to display numbers 2 to 6 on 7 segment LED display. 
+ */
 // Segments A, B, G, E, D 
 void displayNumberTwo(){
   digitalWrite(A,LOW);
@@ -300,6 +330,10 @@ void displayNumberSix(){
   digitalWrite(D,LOW);
 }
 
+
+/**
+ * Functions to turn off the segments of numbers 2 to 6 that was previously displayed on 7 segment LED display. 
+ */
 void eraseNumberTwo(){
   digitalWrite(A,HIGH);
   digitalWrite(B,HIGH);
